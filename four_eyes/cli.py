@@ -52,6 +52,7 @@ def main():
 def prod(_args):
     """Stand-in for the dbt platform production job: build exactly what's on main into the prod schema."""
     sha = git("rev-parse", "origin/main")
+    PROD.mkdir(parents=True, exist_ok=True)
     if not dbt("build", "--target", "prod", "--target-path", str(PROD), cwd=worktree(sha, "prod")):
         sys.exit("Production build failed")
     (PROD / "git_sha.txt").write_text(sha)

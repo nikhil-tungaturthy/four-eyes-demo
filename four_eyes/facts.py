@@ -81,7 +81,7 @@ def classify(pr_m, prod_m):
             kinds.append("body")
         if node["unrendered_config"] != before["unrendered_config"]:
             kinds.append("config")
-        if node["contract"] != before["contract"]:
+        if node.get("contract") != before.get("contract"):   # seeds have no contract
             kinds.append("contract")
         if not kinds and docs(node) != docs(before):
             kinds.append("docs")
