@@ -36,7 +36,7 @@ def converse(model, cwd, tools, steps, sink):
             for message in (prompt, f"You have not submitted a valid {key}. Call the submit tool now."):
                 run = agent.send(message)
                 result = run.wait()
-                transcript += json.loads(run.conversation_json() or "[]")
+                transcript.append({"prompt": message, "conversation": json.loads(run.conversation_json() or "[]")})
                 usage.append(dataclasses.asdict(result.usage) if result.usage else {})
                 if key in sink:
                     break

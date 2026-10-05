@@ -179,7 +179,8 @@ def ci_summary(run_results, pr_m, prod_m, ok, schema):
         "schema": schema,
         "models_built": sorted(name(r["unique_id"]) for r in results if r["unique_id"].startswith("model.")),
         "data_tests": {"pass": sum(r["status"] == "pass" for r in data_tests),
-                       "fail": sum(r["status"] != "pass" for r in data_tests)},
+                       "fail": sum(r["status"] != "pass" for r in data_tests),
+                       "ran": sorted(name(r["unique_id"]) for r in data_tests)},
         "unit_tests": [{"name": name(r["unique_id"]), "status": r["status"],
                         "modified_in_pr": pr_m["unit_tests"][r["unique_id"]]["checksum"]
                         != prod_m["unit_tests"].get(r["unique_id"], {}).get("checksum")} for r in unit_tests],

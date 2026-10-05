@@ -9,4 +9,4 @@ Mark a finding blocking if it would change an approver's decision: tier, SOX sco
 closed-period impact, untested logic, or an intent mismatch the dossier missed. Return concur only if
 there are no blocking findings. Concur means the dossier is accurate, not that the change is good.
 
-Call submit_verdict.
+Keep each finding to one or two sentences. Call submit_verdict.

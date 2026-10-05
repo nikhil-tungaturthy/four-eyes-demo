@@ -24,7 +24,7 @@ PROMPTS = ("dossier", "checker_phase1", "checker_phase2")
 # Self-tests corrupt the dossier on purpose, before the checker sees it, to prove the control catches it.
 SELFTESTS = {
     "drop_sox_exposure": lambda d: d.model_copy(update={
-        "affected_reporting": [r for r in d.affected_reporting if "quarterly_revenue_disclosure" not in r]}),
+        "affected_reporting": [r for r in d.affected_reporting if "quarterly" not in r.lower()]}),
     "flip_closed_period": lambda d: d.model_copy(update={"closed_period_impact": False}),
 }
 
@@ -151,14 +151,13 @@ def bundle_sha(out):
 def gate_command(args):
     last = None
     while True:
-        result = run_gate(args.pr, publish_if_changed_from=last)
-        last = result
+        last = run_gate(args.pr, previous=last)
         if not args.watch:
             return
         time.sleep(15)
 
 
-def run_gate(number, publish_if_changed_from=None):
+def run_gate(number, previous=None):
     """Evaluate the gate with main's policy and the PR's current reviews and commits, then publish
     the four-eyes/gate status and refresh the PR comment."""
     policy = yaml.safe_load(from_main("controls/policy.yml"))
@@ -169,7 +168,7 @@ def run_gate(number, publish_if_changed_from=None):
     summary = read_json(out / "summary.json") if (out / "BUNDLE.sha256").exists() else None
 
     result = gate.evaluate(summary, policy, pr, reviews, commits)
-    if result == publish_if_changed_from:
+    if result == previous:   # --watch: only publish when something changed
         return result
 
     set_status(pr["head"]["sha"], result["state"], result["description"])

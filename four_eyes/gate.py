@@ -32,7 +32,7 @@ def evaluate(summary, policy, pr, reviews, commits):
         return result("failure", f"Checker verdict {summary['verdict']} with {summary['blocking']} blocking finding(s)")
 
     latest = {}   # each reviewer's most recent decisive review wins
-    for review in sorted(reviews, key=lambda r: r["submitted_at"]):
+    for review in sorted(reviews, key=lambda r: r["submitted_at"] or ""):
         if review["state"] in ("APPROVED", "CHANGES_REQUESTED", "DISMISSED"):
             latest[review["user"]["login"]] = review
     approved = {login for login, r in latest.items() if r["state"] == "APPROVED" and r["commit_id"] == head}
