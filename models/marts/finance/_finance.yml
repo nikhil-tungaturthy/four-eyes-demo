@@ -1,0 +1,29 @@
+models:
+  - name: fct_execution_fees
+    description: One row per execution with its fee or rebate.
+    config:
+      meta: { sox_scope: true, control_owner: controllership }
+    columns:
+      - name: execution_id
+        data_tests: [unique, not_null]
+
+  - name: fct_member_monthly_billing
+    description: What each member is invoiced per month.
+    config:
+      meta: { sox_scope: true, control_owner: billing_operations }
+    columns:
+      - name: billing_key
+        data_tests: [unique, not_null]
+
+  - name: fct_net_transaction_revenue
+    description: Monthly net transaction revenue by product; supports the quarterly revenue disclosure.
+    config:
+      contract: { enforced: true }
+      meta: { sox_scope: true, control_owner: controllership, financial_statement_area: revenue }
+    columns:
+      - { name: revenue_key, data_type: varchar, data_tests: [unique, not_null] }
+      - { name: trade_month, data_type: date }
+      - { name: product, data_type: varchar }
+      - { name: gross_fees, data_type: "decimal(18,2)" }
+      - { name: rebates, data_type: "decimal(18,2)" }
+      - { name: net_revenue, data_type: "decimal(18,2)" }

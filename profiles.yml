@@ -1,0 +1,13 @@
+# Local DuckDB "warehouse". Production and PR CI builds share one file but write to
+# different schemas, so the impact probe can compare them with a plain SQL query.
+exchange_revenue:
+  target: prod
+  outputs:
+    prod:
+      type: duckdb
+      path: "{{ env_var('DUCKDB_PATH') }}"
+      schema: prod
+    ci:
+      type: duckdb
+      path: "{{ env_var('DUCKDB_PATH') }}"
+      schema: "{{ env_var('CI_SCHEMA', 'ci') }}"

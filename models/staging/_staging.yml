@@ -1,0 +1,16 @@
+models:
+  - name: stg_members
+    columns:
+      - name: member_id
+        data_tests: [unique, not_null]
+
+  - name: stg_executions
+    description: One row per execution. liquidity_flag A adds liquidity (earns a rebate), R removes it (pays a fee).
+    columns:
+      - name: execution_id
+        data_tests: [unique, not_null]
+      - name: liquidity_flag
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["A", "R"]

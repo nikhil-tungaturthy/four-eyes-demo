@@ -1,0 +1,12 @@
+name: exchange_revenue
+version: "1.0.0"
+profile: exchange_revenue
+
+seeds:
+  exchange_revenue:
+    raw_fee_schedule:
+      +column_types: { effective_from: date, effective_to: date }
+
+models:
+  exchange_revenue:
+    +materialized: table

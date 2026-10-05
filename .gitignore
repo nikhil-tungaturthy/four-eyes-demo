@@ -1,0 +1,16 @@
+# secrets
+.env
+
+# python
+.venv/
+__pycache__/
+
+# dbt
+target/
+logs/
+dbt_packages/
+.user.yml
+
+# four-eyes local state: the DuckDB "warehouse", prod artifacts, and evidence bundles
+.four_eyes/
+evidence/

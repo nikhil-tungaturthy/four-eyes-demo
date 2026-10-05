@@ -1,0 +1,16 @@
+models:
+  - name: fct_member_activity
+    description: Member trading activity for the sales team. Not used in financial reporting.
+    columns:
+      - name: activity_key
+        data_tests: [unique, not_null]
+
+exposures:
+  - name: member_activity_dashboard
+    label: Member activity dashboard
+    type: dashboard
+    maturity: medium
+    owner: { name: Member Sales, email: sales@example.com }
+    depends_on: [ref('fct_member_activity')]
+    config:
+      meta: { sox: false }

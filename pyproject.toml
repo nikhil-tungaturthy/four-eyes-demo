@@ -1,0 +1,22 @@
+[project]
+name = "four-eyes"
+version = "0.1.0"
+description = "AI maker-checker for SOX-scoped dbt changes (demo MVP)"
+requires-python = ">=3.12"
+dependencies = [
+    "dbt-core>=1.10",
+    "dbt-duckdb>=1.10",
+    "duckdb",
+    "cursor-sdk",
+    "pydantic>=2",
+    "pyyaml",
+    "requests",
+    "python-dotenv",
+]
+
+[project.scripts]
+four-eyes = "four_eyes.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

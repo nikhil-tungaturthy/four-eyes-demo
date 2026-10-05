@@ -1,0 +1,22 @@
+models:
+  - name: int_member_monthly_volume
+    description: Monthly equity + ETF share volume per member, and the rebate tier it earns.
+  - name: int_executions_priced
+    description: Each execution joined to its member's tier and the effective fee schedule.
+
+unit_tests:
+  - name: rebate_tier_boundaries
+    model: int_member_monthly_volume
+    given:
+      - input: ref('stg_executions')
+        rows:
+          - { member_id: M1, trade_month: "2026-07-01", product: equity, quantity: 5000000 }
+          - { member_id: M2, trade_month: "2026-07-01", product: equity, quantity: 4999999 }
+          - { member_id: M3, trade_month: "2026-07-01", product: equity, quantity: 1000000 }
+          - { member_id: M4, trade_month: "2026-07-01", product: equity, quantity: 999999 }
+    expect:
+      rows:
+        - { member_id: M1, trade_month: "2026-07-01", rebate_tier: 1 }
+        - { member_id: M2, trade_month: "2026-07-01", rebate_tier: 2 }
+        - { member_id: M3, trade_month: "2026-07-01", rebate_tier: 2 }
+        - { member_id: M4, trade_month: "2026-07-01", rebate_tier: 3 }

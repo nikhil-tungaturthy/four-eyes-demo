@@ -1,0 +1,18 @@
+exposures:
+  - name: quarterly_revenue_disclosure
+    label: Quarterly revenue disclosure support schedule
+    type: analysis
+    maturity: high
+    owner: { name: Controllership, email: controllership@example.com }
+    depends_on: [ref('fct_net_transaction_revenue')]
+    config:
+      meta: { sox: true, control_id: ITGC-CM-01 }
+
+  - name: member_invoicing_feed
+    label: Monthly member invoicing feed
+    type: application
+    maturity: high
+    owner: { name: Billing Operations, email: billing@example.com }
+    depends_on: [ref('fct_member_monthly_billing')]
+    config:
+      meta: { sox: true }

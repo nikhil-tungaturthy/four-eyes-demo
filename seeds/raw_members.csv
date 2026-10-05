@@ -1,0 +1,13 @@
+member_id,member_name,member_type,onboarded_on
+M01,Harborview Securities,broker_dealer,2019-03-04
+M02,Cobalt Ridge Trading,market_maker,2018-07-16
+M03,Northgate Capital Markets,market_maker,2020-01-13
+M04,Willow Point Brokerage,broker_dealer,2021-05-03
+M05,Ironbridge Liquidity,market_maker,2017-11-20
+M06,Saltmarsh Partners,broker_dealer,2022-02-07
+M07,Keystone Arc Markets,market_maker,2019-09-09
+M08,Bluefin Execution,broker_dealer,2023-04-17
+M09,Granite Lane Securities,broker_dealer,2020-08-24
+M10,Meridian Flow Trading,market_maker,2018-12-03
+M11,Copperleaf Brokerage,broker_dealer,2024-06-10
+M12,Tidewater Quant,market_maker,2021-10-25
