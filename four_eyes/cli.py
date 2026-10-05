@@ -10,6 +10,7 @@ import argparse
 import hashlib
 import json
 import os
+import shutil
 import sys
 import time
 
@@ -83,14 +84,16 @@ def evidence(args):
 def build_evidence(pr, selftest=None):
     number, head = pr["number"], pr["head"]["sha"]
     out = EVIDENCE / f"pr-{number}" / (head[:12] + (f"-selftest-{selftest}" if selftest else ""))
-    policy = yaml.safe_load(from_main("controls/policy.yml"))
+    shutil.rmtree(out, ignore_errors=True)   # evidence is all-or-nothing: never mix files from two runs
+    policy_text = from_main("controls/policy.yml")
+    policy = yaml.safe_load(policy_text)
     prompts = {name: from_main(f"controls/prompts/{name}.md") for name in PROMPTS}
     dossier_model, checker_model = os.environ["DOSSIER_MODEL"], os.environ["CHECKER_MODEL"]
 
     print(f"[1/4] dbt CI build and facts for PR #{number} @ {head[:7]}")
     git("fetch", "--quiet", "origin", f"pull/{number}/head")
     ci_dir, ci_ok = facts.run_ci(number, head)
-    fx = facts.collect(pr, ci_dir, ci_ok, policy, {"policy.yml": from_main("controls/policy.yml"), **prompts}, out)
+    fx = facts.collect(pr, ci_dir, ci_ok, policy, {"policy.yml": policy_text, **prompts}, out)
     print(f"      tier floor {fx['tier_floor']['tier']}: {', '.join(f['rule'] for f in fx['tier_floor']['fired']) or 'default'}")
 
     pr_text = f"## PR title\n{pr['title']}\n\n## PR description\n{pr['body'] or ''}"
