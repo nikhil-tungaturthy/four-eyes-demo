@@ -1,5 +1,5 @@
 # Routes review requests. The four-eyes/gate status is what enforces the approval policy.
-/controls/                @controller-demo @platform-lead-demo
-/four_eyes/               @platform-lead-demo
-/.github/                 @platform-lead-demo
-/models/marts/finance/    @platform-lead-demo
+/controls/                @ntungaturthy @niktun
+/four_eyes/               @niktun
+/.github/                 @niktun
+/models/marts/finance/    @niktun
