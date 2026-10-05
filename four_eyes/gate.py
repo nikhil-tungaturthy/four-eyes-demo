@@ -1,6 +1,8 @@
 """The merge decision. Deterministic code, no model calls. Nothing an agent writes can turn it green."""
 import re
 
+WRITE_ACCESS = ("OWNER", "MEMBER", "COLLABORATOR")   # anyone can review a public repo; only these count
+
 
 def makers_of(pr, commits):
     """The PR author plus everyone who authored or committed to the PR. GitHub's own web-flow
@@ -32,8 +34,8 @@ def evaluate(summary, policy, pr, reviews, commits):
         return result("failure", f"Checker verdict {summary['verdict']} with {summary['blocking']} blocking finding(s)")
 
     latest = {}   # each reviewer's most recent decisive review wins
-    for review in sorted(reviews, key=lambda r: r["submitted_at"]):
-        if review["state"] in ("APPROVED", "CHANGES_REQUESTED", "DISMISSED"):
+    for review in sorted(reviews, key=lambda r: r["submitted_at"] or ""):
+        if review["state"] in ("APPROVED", "CHANGES_REQUESTED", "DISMISSED") and review["author_association"] in WRITE_ACCESS:
             latest[review["user"]["login"]] = review
     approved = {login for login, r in latest.items() if r["state"] == "APPROVED" and r["commit_id"] == head}
     makers = makers_of(pr, commits)

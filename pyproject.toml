@@ -10,7 +10,6 @@ dependencies = [
     "cursor-sdk",
     "pydantic>=2",
     "pyyaml",
-    "requests",
     "python-dotenv",
 ]
 

@@ -2,7 +2,7 @@
 
   four-eyes prod                      build main into the production schema
   four-eyes evidence --pr N           facts -> dossier agent -> checker agent -> evidence bundle -> gate
-  four-eyes evidence --pr N --selftest drop_sox_exposure
+  four-eyes evidence --pr N --selftest hide_intent_mismatch
   four-eyes gate --pr N [--watch]     evaluate the merge gate and post the four-eyes/gate status
   four-eyes reconcile                 prove every production commit came through an approved PR
 """
@@ -10,6 +10,7 @@ import argparse
 import hashlib
 import json
 import os
+import shutil
 import sys
 import time
 
@@ -23,8 +24,11 @@ PROMPTS = ("dossier", "checker_phase1", "checker_phase2")
 
 # Self-tests corrupt the dossier on purpose, before the checker sees it, to prove the control catches it.
 SELFTESTS = {
-    "drop_sox_exposure": lambda d: d.model_copy(update={
-        "affected_reporting": [r for r in d.affected_reporting if "quarterly_revenue_disclosure" not in r]}),
+    # only the checker can catch this one: code can't judge intent
+    "hide_intent_mismatch": lambda d: d.model_copy(update={
+        "intent_alignment": "aligned",
+        "intent_notes": "The change matches the ticket, the business justification, and the stated effective date."}),
+    # code catches this one on its own (agents.cross_checks)
     "flip_closed_period": lambda d: d.model_copy(update={"closed_period_impact": False}),
 }
 
@@ -52,6 +56,7 @@ def main():
 def prod(_args):
     """Stand-in for the dbt platform production job: build exactly what's on main into the prod schema."""
     sha = git("rev-parse", "origin/main")
+    PROD.mkdir(parents=True, exist_ok=True)
     if not dbt("build", "--target", "prod", "--target-path", str(PROD), cwd=worktree(sha, "prod")):
         sys.exit("Production build failed")
     (PROD / "git_sha.txt").write_text(sha)
@@ -73,7 +78,7 @@ def evidence(args):
         summary = read_json(out / "summary.json")
         caught = summary["verdict"] == "dispute" or summary["blocking"] > 0
         set_status(pr["head"]["sha"], "success" if caught else "failure",
-                   f"{args.selftest}: fault {'caught' if caught else 'NOT caught'}", context="four-eyes/selftest")
+                   f"Fault {'caught' if caught else 'NOT caught'}", context=f"four-eyes/selftest/{args.selftest}")
         print(f"Self-test {args.selftest}: {'caught' if caught else 'NOT CAUGHT'} · evidence in {out}")
     else:
         run_gate(args.pr)
@@ -82,14 +87,16 @@ def evidence(args):
 def build_evidence(pr, selftest=None):
     number, head = pr["number"], pr["head"]["sha"]
     out = EVIDENCE / f"pr-{number}" / (head[:12] + (f"-selftest-{selftest}" if selftest else ""))
-    policy = yaml.safe_load(from_main("controls/policy.yml"))
+    shutil.rmtree(out, ignore_errors=True)   # evidence is all-or-nothing: never mix files from two runs
+    policy_text = from_main("controls/policy.yml")
+    policy = yaml.safe_load(policy_text)
     prompts = {name: from_main(f"controls/prompts/{name}.md") for name in PROMPTS}
     dossier_model, checker_model = os.environ["DOSSIER_MODEL"], os.environ["CHECKER_MODEL"]
 
     print(f"[1/4] dbt CI build and facts for PR #{number} @ {head[:7]}")
     git("fetch", "--quiet", "origin", f"pull/{number}/head")
     ci_dir, ci_ok = facts.run_ci(number, head)
-    fx = facts.collect(pr, ci_dir, ci_ok, policy, {"policy.yml": from_main("controls/policy.yml"), **prompts}, out)
+    fx = facts.collect(pr, ci_dir, ci_ok, policy, {"policy.yml": policy_text, **prompts}, out)
     print(f"      tier floor {fx['tier_floor']['tier']}: {', '.join(f['rule'] for f in fx['tier_floor']['fired']) or 'default'}")
 
     pr_text = f"## PR title\n{pr['title']}\n\n## PR description\n{pr['body'] or ''}"
@@ -150,14 +157,13 @@ def bundle_sha(out):
 def gate_command(args):
     last = None
     while True:
-        result = run_gate(args.pr, publish_if_changed_from=last)
-        last = result
+        last = run_gate(args.pr, previous=last)
         if not args.watch:
             return
         time.sleep(15)
 
 
-def run_gate(number, publish_if_changed_from=None):
+def run_gate(number, previous=None):
     """Evaluate the gate with main's policy and the PR's current reviews and commits, then publish
     the four-eyes/gate status and refresh the PR comment."""
     policy = yaml.safe_load(from_main("controls/policy.yml"))
@@ -168,7 +174,7 @@ def run_gate(number, publish_if_changed_from=None):
     summary = read_json(out / "summary.json") if (out / "BUNDLE.sha256").exists() else None
 
     result = gate.evaluate(summary, policy, pr, reviews, commits)
-    if result == publish_if_changed_from:
+    if result == previous:   # --watch: only publish when something changed
         return result
 
     set_status(pr["head"]["sha"], result["state"], result["description"])

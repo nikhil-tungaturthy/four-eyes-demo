@@ -36,7 +36,7 @@ def converse(model, cwd, tools, steps, sink):
             for message in (prompt, f"You have not submitted a valid {key}. Call the submit tool now."):
                 run = agent.send(message)
                 result = run.wait()
-                transcript += json.loads(run.conversation_json() or "[]")
+                transcript.append({"prompt": message, "conversation": json.loads(run.conversation_json() or "[]")})
                 usage.append(dataclasses.asdict(result.usage) if result.usage else {})
                 if key in sink:
                     break
@@ -74,8 +74,11 @@ def cross_checks(facts, dossier):
 
     if any(p.get("closed_period_impact") for p in facts["impact_probe"]) and not dossier.closed_period_impact:
         add("blocking", "Facts show closed-period impact, but the dossier says there is none")
-    if facts["sox_resources"] and not dossier.affected_reporting:
-        add("blocking", "SOX-scoped resources are reached, but the dossier lists no affected reporting")
+    reported = " ".join(dossier.affected_reporting)
+    missing = [uid.split(".")[-1] for uid in facts["sox_resources"]
+               if uid.startswith("exposure.") and uid.split(".")[-1] not in reported]
+    if missing:
+        add("blocking", f"SOX exposures are reached but missing from the dossier's affected reporting: {', '.join(missing)}")
     if dossier.assessed_tier > facts["tier_floor"]["tier"]:
         add("advisory", f"Dossier assessed Tier {dossier.assessed_tier}, looser than the Tier "
                         f"{facts['tier_floor']['tier']} floor (the floor still applies)")
