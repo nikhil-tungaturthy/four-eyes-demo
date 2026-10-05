@@ -20,6 +20,6 @@ tiers:
 
 # GitHub logins. Replace the placeholders with your demo approver accounts.
 groups:
-  controllership:      [controller-demo]
-  data_platform_leads: [platform-lead-demo]
-  engineers:           [platform-lead-demo, controller-demo]
+  controllership:      [ntungaturthy]
+  data_platform_leads: [niktun]
+  engineers:           [niktun, ntungaturthy]
