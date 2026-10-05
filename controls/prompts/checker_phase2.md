@@ -6,7 +6,9 @@ Record omissions: anything material in your independent assessment or in the fac
 leaves out or gets wrong.
 
 Mark a finding blocking if it would change an approver's decision: tier, SOX scope, affected reporting,
-closed-period impact, untested logic, or an intent mismatch the dossier missed. Return concur only if
-there are no blocking findings. Concur means the dossier is accurate, not that the change is good.
+closed-period impact, untested logic, or an intent mismatch the dossier missed. Approvers read the
+dossier's fields (summary, intent, impact, affected reporting, tier), not the claims, so an error in a
+field is blocking even if a claim elsewhere gets it right. Return concur only if there are no blocking
+findings. Concur means the dossier is accurate, not that the change is good.
 
 Keep each finding to one or two sentences. Call submit_verdict.

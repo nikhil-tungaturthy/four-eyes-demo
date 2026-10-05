@@ -47,10 +47,10 @@ The agents prepare and challenge evidence. The control itself is deterministic c
 | Code sets the tier floor. An agent can make the tier stricter but never looser. | `facts.tier_floor`, `min(...)` in `cli.build_evidence` |
 | Invalid agent output is rejected, and no valid submission means the run fails closed. | `agents.submit_tool`, `agents.converse` |
 | A checker dispute or any blocking finding blocks the merge. | `gate.evaluate` |
-| Code cross-checks the dossier's key claims against the facts. | `agents.cross_checks` |
+| Code cross-checks the dossier's key claims (closed-period impact, SOX exposures, tier) against the facts. | `agents.cross_checks` |
 | Policy and prompts always come from `main`, never from the PR being judged. | `common.from_main` |
 | Agents are read-only: no edit, shell, web, or warehouse access. | `agents.READ_ONLY` |
-| Approvals from anyone who pushed to the PR don't count. | `gate.makers_of` |
+| Approvals from anyone who pushed to the PR, or who lacks write access, don't count. | `gate.makers_of`, `gate.WRITE_ACCESS` |
 
 ## Repo tour
 
@@ -89,7 +89,7 @@ uv sync                                # Python 3.12, dbt-core + dbt-duckdb, cur
 uv run four-eyes prod                  # build main into the prod schema (stand-in for the production job)
 uv run four-eyes evidence --pr 2       # facts → dossier → checker → bundle → gate (about 5 minutes)
 uv run four-eyes gate --pr 2 --watch   # re-evaluate as approvals come in
-uv run four-eyes evidence --pr 2 --selftest drop_sox_exposure   # prove the control catches a bad dossier
+uv run four-eyes evidence --pr 2 --selftest hide_intent_mismatch   # prove the control catches a bad dossier
 uv run four-eyes reconcile             # after merging and rebuilding prod
 ```
 

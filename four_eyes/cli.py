@@ -2,7 +2,7 @@
 
   four-eyes prod                      build main into the production schema
   four-eyes evidence --pr N           facts -> dossier agent -> checker agent -> evidence bundle -> gate
-  four-eyes evidence --pr N --selftest drop_sox_exposure
+  four-eyes evidence --pr N --selftest hide_intent_mismatch
   four-eyes gate --pr N [--watch]     evaluate the merge gate and post the four-eyes/gate status
   four-eyes reconcile                 prove every production commit came through an approved PR
 """
@@ -24,8 +24,11 @@ PROMPTS = ("dossier", "checker_phase1", "checker_phase2")
 
 # Self-tests corrupt the dossier on purpose, before the checker sees it, to prove the control catches it.
 SELFTESTS = {
-    "drop_sox_exposure": lambda d: d.model_copy(update={
-        "affected_reporting": [r for r in d.affected_reporting if "quarterly" not in r.lower()]}),
+    # only the checker can catch this one: code can't judge intent
+    "hide_intent_mismatch": lambda d: d.model_copy(update={
+        "intent_alignment": "aligned",
+        "intent_notes": "The change matches the ticket, the business justification, and the stated effective date."}),
+    # code catches this one on its own (agents.cross_checks)
     "flip_closed_period": lambda d: d.model_copy(update={"closed_period_impact": False}),
 }
 
