@@ -17,7 +17,8 @@ class Dossier(BaseModel):
     intent_alignment: Literal["aligned", "partially_aligned", "misaligned", "unclear"]
     intent_notes: str = Field(description="One to three sentences. Lead with any mismatch")
     financial_impact: str = Field(description="One to three sentences, citing facts.impact_probe")
-    closed_period_impact: bool = Field(description="True if any period on or before facts.closed_through changes")
+    closed_period_impact: bool = Field(description="True if a figure already reported for a period on or before "
+                                                   "facts.closed_through would change. New columns don't count")
     affected_reporting: list[str] = Field(description="Names of affected exposures and SOX-scoped models")
     related_logic_not_changed: list[str] = Field(max_length=3, description="Sibling logic the PR may have missed, one sentence each")
     testing_assessment: str = Field(description="One to three sentences")
