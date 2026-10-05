@@ -6,7 +6,7 @@ the PR head), determine:
 - what the change does
 - which downstream models and exposures it affects (trace refs yourself)
 - whether it reaches any model with config.meta.sox_scope or any exposure with config.meta.sox
-- whether results for periods that were already reported would change
+- whether figures already reported for closed periods would change (new columns don't count)
 - which tests cover the change
 - the risk tier you would assign (1 high, 2 medium, 3 low)
 
