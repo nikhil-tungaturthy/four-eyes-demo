@@ -431,7 +431,6 @@ dependencies = [
     { name = "pydantic" },
     { name = "python-dotenv" },
     { name = "pyyaml" },
-    { name = "requests" },
 ]
 
 [package.metadata]
@@ -443,7 +442,6 @@ requires-dist = [
     { name = "pydantic", specifier = ">=2" },
     { name = "python-dotenv" },
     { name = "pyyaml" },
-    { name = "requests" },
 ]
 
 [[package]]

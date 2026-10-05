@@ -55,7 +55,7 @@ The agents prepare and challenge evidence. The control itself is deterministic c
 ## Repo tour
 
 ```
-four_eyes/            the control (about 600 lines of Python)
+four_eyes/            the control (about 800 lines of Python)
   cli.py              commands: prod, evidence, gate, reconcile; evidence bundle; PR comment + status
   common.py           paths, and thin wrappers around git, gh, and dbt
   facts.py            deterministic facts: CI build, change classification, lineage, impact probe, tier floor
