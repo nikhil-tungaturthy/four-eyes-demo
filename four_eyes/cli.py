@@ -75,7 +75,7 @@ def evidence(args):
         summary = read_json(out / "summary.json")
         caught = summary["verdict"] == "dispute" or summary["blocking"] > 0
         set_status(pr["head"]["sha"], "success" if caught else "failure",
-                   f"{args.selftest}: fault {'caught' if caught else 'NOT caught'}", context="four-eyes/selftest")
+                   f"Fault {'caught' if caught else 'NOT caught'}", context=f"four-eyes/selftest/{args.selftest}")
         print(f"Self-test {args.selftest}: {'caught' if caught else 'NOT CAUGHT'} · evidence in {out}")
     else:
         run_gate(args.pr)
