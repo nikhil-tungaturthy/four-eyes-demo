@@ -10,7 +10,8 @@ select
     trade_month,
     total_quantity,
     case
-        when total_quantity >= 5000000 then 1
+        when trade_month >= cast('2026-09-01' as date) and total_quantity > 5000000 then 1
+        when trade_month < cast('2026-09-01' as date) and total_quantity >= 5000000 then 1
         when total_quantity >= 1000000 then 2
         else 3
     end as rebate_tier
