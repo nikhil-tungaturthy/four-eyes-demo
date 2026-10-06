@@ -10,15 +10,19 @@ unit_tests:
     given:
       - input: ref('stg_executions')
         rows:
-          - { member_id: M1, trade_month: "2026-07-01", product: equity, quantity: 5000000 }
-          - { member_id: M2, trade_month: "2026-07-01", product: equity, quantity: 4999999 }
-          - { member_id: M3, trade_month: "2026-07-01", product: equity, quantity: 1000000 }
-          - { member_id: M4, trade_month: "2026-07-01", product: equity, quantity: 999999 }
-          - { member_id: M5, trade_month: "2026-07-01", product: equity, quantity: 5000001 }
+          # before 2026-09-01: 5,000,000 or more is Tier 1
+          - { member_id: M1, trade_month: "2026-08-01", product: equity, quantity: 5000000 }
+          - { member_id: M2, trade_month: "2026-08-01", product: equity, quantity: 4999999 }
+          - { member_id: M3, trade_month: "2026-08-01", product: equity, quantity: 1000000 }
+          - { member_id: M4, trade_month: "2026-08-01", product: equity, quantity: 999999 }
+          # from 2026-09-01: more than 5,000,000 is Tier 1
+          - { member_id: M5, trade_month: "2026-09-01", product: equity, quantity: 5000000 }
+          - { member_id: M6, trade_month: "2026-09-01", product: equity, quantity: 5000001 }
     expect:
       rows:
-        - { member_id: M1, trade_month: "2026-07-01", rebate_tier: 2 }
-        - { member_id: M2, trade_month: "2026-07-01", rebate_tier: 2 }
-        - { member_id: M3, trade_month: "2026-07-01", rebate_tier: 2 }
-        - { member_id: M4, trade_month: "2026-07-01", rebate_tier: 3 }
-        - { member_id: M5, trade_month: "2026-07-01", rebate_tier: 1 }
+        - { member_id: M1, trade_month: "2026-08-01", rebate_tier: 1 }
+        - { member_id: M2, trade_month: "2026-08-01", rebate_tier: 2 }
+        - { member_id: M3, trade_month: "2026-08-01", rebate_tier: 2 }
+        - { member_id: M4, trade_month: "2026-08-01", rebate_tier: 3 }
+        - { member_id: M5, trade_month: "2026-09-01", rebate_tier: 2 }
+        - { member_id: M6, trade_month: "2026-09-01", rebate_tier: 1 }
