@@ -10,7 +10,7 @@ select
     trade_month,
     total_quantity,
     case
-        when total_quantity >= 5000000 then 1
+        when total_quantity > 5000000 then 1
         when total_quantity >= 1000000 then 2
         else 3
     end as rebate_tier
