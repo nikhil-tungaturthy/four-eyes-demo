@@ -14,9 +14,11 @@ unit_tests:
           - { member_id: M2, trade_month: "2026-07-01", product: equity, quantity: 4999999 }
           - { member_id: M3, trade_month: "2026-07-01", product: equity, quantity: 1000000 }
           - { member_id: M4, trade_month: "2026-07-01", product: equity, quantity: 999999 }
+          - { member_id: M5, trade_month: "2026-07-01", product: equity, quantity: 5000001 }
     expect:
       rows:
-        - { member_id: M1, trade_month: "2026-07-01", rebate_tier: 1 }
+        - { member_id: M1, trade_month: "2026-07-01", rebate_tier: 2 }
         - { member_id: M2, trade_month: "2026-07-01", rebate_tier: 2 }
         - { member_id: M3, trade_month: "2026-07-01", rebate_tier: 2 }
         - { member_id: M4, trade_month: "2026-07-01", rebate_tier: 3 }
+        - { member_id: M5, trade_month: "2026-07-01", rebate_tier: 1 }
