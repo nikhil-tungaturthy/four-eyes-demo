@@ -3,7 +3,16 @@ models:
     description: Member trading activity for the sales team. Not used in financial reporting.
     columns:
       - name: activity_key
+        description: Member and month, e.g. M03|2026-07-01.
         data_tests: [unique, not_null]
+      - name: member_id
+        description: Exchange member identifier (M01 to M12).
+      - name: trade_month
+        description: First day of the month the executions happened in.
+      - name: executions
+        description: Number of executions across all products.
+      - name: distinct_symbols
+        description: Number of different symbols the member traded that month.
 
 exposures:
   - name: member_activity_dashboard
